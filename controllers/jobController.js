@@ -15,6 +15,17 @@ const createJob = async (req,res) =>{
     }
 }
 
+const getAllJobs = async (req,res)=>{
+    try {
+        const user = req.body.user;
+        const jobs = await Job.find({user}).sort({createdAt: -1});
+        res.status(201).json(jobs)
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+}
+
 module.exports = {
-    createJob
+    createJob,
+    getAllJobs
 }
