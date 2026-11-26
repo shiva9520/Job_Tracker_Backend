@@ -16,6 +16,8 @@ jobs:
   publish:
     name: Build and Push to GHCR & Docker Hub
     runs-on: ubuntu-latest
+    env:
+      HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
 
     steps:
       - name: Checkout source
@@ -37,11 +39,11 @@ jobs:
           docker push "${IMAGE_LOWER}:${SHORT_SHA}"
 
       - name: Push to Docker Hub
+        if: env.HAS_DOCKERHUB == 'true'
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
           SHORT_SHA: ${{ github.sha }}
-        if: env.DOCKERHUB_USERNAME != '' && env.DOCKERHUB_TOKEN != ''
         run: |
           echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
           DOCKERHUB_USER_LOWER=$(echo "$DOCKERHUB_USERNAME" | tr '[:upper:]' '[:lower:]')
