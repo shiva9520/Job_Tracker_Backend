@@ -8,6 +8,8 @@ on:
       - "ci/**"
   workflow_dispatch:
 
+  
+
 jobs:
   test:
     name: Node.js Test & Syntax Check
