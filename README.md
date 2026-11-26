@@ -41,4 +41,9 @@ docker compose up --build
 ## CI/CD Pipeline
 
 - **CI (`.github/workflows/ci.yml`)**: Runs on pushes and pull requests to `main` (`feat/**`, `ci/**`), verifying syntax (`node --check`), smoke tests (`npm test`), and the Docker image build.
-- **CD (`.github/workflows/cd.yml`)**: Runs on pushes to `main` and `v*` tags (or manual dispatch), building and publishing the container image to GitHub Container Registry (`ghcr.io`).
+- **CD (`.github/workflows/cd.yml`)**: Runs on pushes to `main` and `v*` tags (or manual dispatch), building the container image and publishing it to GitHub Container Registry (`ghcr.io`) and (when `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` secrets are set) Docker Hub.
+
+### Required GitHub Secrets for Docker Hub
+In your GitHub repository **Settings → Secrets and variables → Actions**, add:
+- `DOCKERHUB_USERNAME`: your Docker Hub username
+- `DOCKERHUB_TOKEN`: a Docker Hub Access Token (with Read & Write permissions)
