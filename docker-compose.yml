@@ -1,0 +1,34 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: job-tracker-api
+    ports:
+      - "${PORT:-8080}:8080"
+    environment:
+      PORT: 8080
+      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/jobTrack}
+      JWT_SECRET: ${JWT_SECRET:-change_this_jwt_secret}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    container_name: job-tracker-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
