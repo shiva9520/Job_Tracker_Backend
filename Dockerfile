@@ -20,7 +20,6 @@ COPY --chown=node:node controllers ./controllers
 COPY --chown=node:node middleware ./middleware
 COPY --chown=node:node models ./models
 COPY --chown=node:node routes ./routes
-COPY --chown=node:node utils ./utils
 
 USER node
 
