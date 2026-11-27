@@ -46,3 +46,12 @@ jobs:
           tags: job-tracker-backend:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  cd:
+    name: Call CD Publish Workflow
+    needs: [test, docker-build]
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/cd.yml
+    secrets: inherit
