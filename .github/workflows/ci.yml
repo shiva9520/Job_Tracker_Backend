@@ -2,44 +2,40 @@ name: CI
 
 on:
   workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    name: Node.js Test & Syntax Check
+    name: Test & Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-          cache: "npm"
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Check JavaScript syntax
-        run: node --check server.js && node --check app.js
-
-      - name: Run smoke tests
-        run: npm test
+      - run: npm ci
+      - run: node --check server.js && node --check app.js
+      - run: npm test
 
   docker-build:
-    name: Verify Docker Image Build
+    name: Docker Build Check
     runs-on: ubuntu-latest
     needs: test
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build container image
-        uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v6
         with:
           context: .
           push: false
@@ -48,7 +44,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   cd:
-    name: Call CD Publish Workflow
+    name: Deploy Image
     needs: [test, docker-build]
     permissions:
       contents: read
