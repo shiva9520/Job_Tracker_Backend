@@ -1,6 +1,7 @@
 name: CD Publish Container Image
 
 on:
+  workflow_call:
   push:
     branches:
       - main
